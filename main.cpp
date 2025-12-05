@@ -6,7 +6,7 @@
 #include <exception>
 #include <algorithm>
 #include <cstring> // для strerror
-#include <locale>
+#include <windows.h> // Добавляем этот заголовочный файл
 
 using namespace std;
 
@@ -183,16 +183,13 @@ void printUsage(const char* programName) {
     cout << endl;
     cout << "Примеры:" << endl;
     cout << "  " << programName << " input.txt output.txt" << endl;
-    cout << "  " << programName << " 111.txt result.txt" << endl;
-    cout << "  " << programName << " \"C:\\My Files\\data.txt\" \"C:\\My Files\\filtered.txt\"" << endl;
 }
 
 int main(int argc, char* argv[]) {
-    setlocale(LC_ALL, "rus");
-    cout << "==========================================" << endl;
-    cout << "  ОБРАБОТКА ТЕКСТОВЫХ ФАЙЛОВ (STL multimap)" << endl;
-    cout << "==========================================" << endl;
     
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
     // Проверяем количество аргументов командной строки
     if (argc != 3) {
         cerr << "Ошибка: неверное количество аргументов!" << endl;
