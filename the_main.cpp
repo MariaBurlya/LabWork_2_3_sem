@@ -86,6 +86,8 @@ public:
         }
     }
 });
+    inputFile.close();
+    outputFile.close();
     };
 };
 
