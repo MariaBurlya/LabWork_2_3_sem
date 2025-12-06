@@ -34,10 +34,11 @@ public:
     string currentLine;
     streampos linePosition = inputFile.tellg(); // текущая позиция в файле
     
-    while (getline(inputFile, currentLine)) { // удаляем \r перед подсчетом длины
-        if (!currentLine.empty() && currentLine.back() == '\r') {
-            currentLine.pop_back();
-        }
+    while (getline(inputFile, currentLine)) { // удаления \r из строки
+            currentLine.erase(
+                remove(currentLine.begin(), currentLine.end(), '\r'),
+                currentLine.end()
+            );
         
         int lineLength = currentLine.length();
         int position = static_cast<int>(linePosition);
@@ -65,32 +66,27 @@ public:
         throw runtime_error("Не удалось создать файл '" + outputFilename + "' для записи");
     }
     
-    auto rangeBegin = linesData.lower_bound(20);  // первый элемент ≤ 20
-    auto rangeEnd = linesData.upper_bound(10);    // первый элемент < 10
+    auto rangeBegin = linesData.lower_bound(20);
+    auto rangeEnd = linesData.upper_bound(9);
     
     // перебор строк в найденном диапазоне
-    for (auto it = rangeBegin; it != rangeEnd; ++it) {
-        int lineLength = it->first;      // длина строки
-        int filePosition = it->second;   // позиция в файле
-        
-        // доп.проверка длины
-        if (lineLength >= 10 && lineLength <= 20) {
-            inputFile.seekg(filePosition);
-            
-            string lineContent;
-            if (getline(inputFile, lineContent)) {
-                if (!lineContent.empty() && lineContent.back() == '\r') {
-                    lineContent.pop_back();
-                }
-                
-                outputFile << lineContent << '\n';
-            }
+    for_each(rangeBegin, rangeEnd, [&](const auto& pair) {
+    int lineLength = pair.first;
+    int filePosition = pair.second;
+    
+    if (lineLength >= 10 && lineLength <= 20) {
+        inputFile.seekg(filePosition);
+        string lineContent;
+        if (getline(inputFile, lineContent)) {
+            lineContent.erase(
+                remove(lineContent.begin(), lineContent.end(), '\r'),
+                lineContent.end()
+            );
+            outputFile << lineContent << '\n';
         }
     }
-    
-    inputFile.close();
-    outputFile.close();
-}
+});
+    };
 };
 
 void printUsage(const char* program_name) {
